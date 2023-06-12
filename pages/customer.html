@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Manage</title>
+    <meta content="width=device-width initial-scale=1" name="viewport">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+
+
+    <style>
+        ul > li {
+            cursor: pointer;
+            margin: 20px;
+            color: #7abaff;
+        }
+    </style>
+
+</head>
+<body>
+
+<!--header-->
+<header class="p-3 mb-2 bg-black text-white" style="background-color: #0f6674">
+    <h1 class="position-absolute" id="nav">Tuna POS System</h1>
+    <ul class="list-group list-group-horizontal text-danger justify-content-end font-weight-bold">
+        <li class="btn btn-dark" id="lnkHome"><a href="../index.html">Home</a></li>
+        <li class="btn btn-dark" id="lnkCustomer"><a class="text-white" href="customer.html">Customer</a>
+        </li>
+        <li class="btn btn-dark" id="lnkItem"><a href="item.html">Item</a></li>
+        <li class="btn btn-dark" id="lnkOrders"><a href="order.html">Orders</a></li>
+    </ul>
+</header>
+
+<!--customer content-->
+<main class="container-fluid" id="myMane">
+    <section class="row" style="background-color: #8fd19e">
+
+        <div class="col-12 col-lg-4">
+            <h1>Customer Registration</h1>
+
+            <div class="form-group">
+                <label for="id">Customer ID</label>
+                <input class="form-control" id="id" required type="text">
+                <span class="control-error" id="lblcusid"></span>
+            </div>
+            <div class="form-group">
+                <label for="name">Customer Name</label>
+                <input class="form-control" id="name" type="text">
+                <span class="control-error" id="lblcusname"></span>
+            </div>
+            <div class="form-group">
+                <label for="address">Customer Address</label>
+                <input class="form-control" id="address" type="text">
+                <span class="control-error" id="lblcusaddress"></span>
+            </div>
+            <div class="form-group">
+                <label for="tel">Customer Salary</label>
+                <input class="form-control" id="tel" type="text">
+                <span class="control-error" id="lblcussalary"></span>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="saveBtn">Save Customer</button>
+                <button class="btn btn-danger" id="deleteBtn">Remove</button>
+                <button class="btn btn-warning" id="updateBtn">Update</button>
+                <!--<button class="btn btn-success" id="btnGetAll">Get All</button>
+                <button class="btn btn-danger" id="btn-clear1">Clear All</button>-->
+            </div>
+
+        </div>
+        <div class="col-12 col-lg-8 mt-3">
+            <table class="table table-bordered table-hover" id="tbl">
+                <thead class="bg-danger text-white">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Customer Address</th>
+                    <th>Customer Salary</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+
+<script src="../assets/js/jquery-3.6.1.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+
+<script>
+
+    var data = "DATA";
+
+    $('#saveBtn').on('click', () => {
+
+        if (checkText()) {
+            let arr = getLocalSData();
+
+            if (isExistsById(arr)) {
+                alert("Customer ID all ready exists !");
+                return;
+            }
+            arr.push(initObj());
+            localStorage.setItem(data, JSON.stringify(arr));
+            loadData();
+            disableBtn();
+            clearData();
+        }
+    });
+
+    //--------check customer_id all ready exists --------------------------
+
+    function isExistsById(arr) {
+        let flag = false;
+        arr.filter((event) => {
+            if (event.customer_id === $('#id').val()) {
+                flag = true;
+            }
+        });
+        return flag;
+    }
+
+
+    //----------------get localStorage array-------------------------------
+
+    function getLocalSData() {
+
+        let pre_data = localStorage.getItem(data);
+        let data_array = [];
+        if (pre_data) {
+            data_array = JSON.parse(pre_data);
+        }
+        return data_array;
+    }
+
+    //--------------create obj using textField data----------------------------
+
+    function initObj() {
+        return {
+            customer_id: $('#id').val(),
+            customer_name: $('#name').val(),
+            customer_address: $('#address').val(),
+            customer_tel: $('#tel').val()
+        }
+    }
+
+    //-------------------load table data-------------------------------
+
+    function loadData() {
+
+        let per_data = localStorage.getItem(data);
+
+        $('table tbody tr td').remove();
+
+        let customer_data_arr = JSON.parse(per_data);
+
+        if (per_data) {
+            customer_data_arr.map((value) => {
+                var row = "<tr>" +
+                    "<td>" + value.customer_id + "</td>" +
+                    "<td>" + value.customer_name + "</td>" +
+                    "<td>" + value.customer_address + "</td>" +
+                    "<td>" + value.customer_tel + "</td>" +
+                    "</tr>";
+
+                $('tbody').append(row);
+            });
+        }
+    }
+
+    //---------------add table row click event listener-------------------------
+
+    loadData();
+
+    $('table tbody').on('click', 'tr', (event) => {
+        $('#id').val($(event.target).closest('tr').find('td').eq(0).text())
+        $('#name').val($(event.target).closest('tr').find('td').eq(1).text())
+        $('#address').val($(event.target).closest('tr').find('td').eq(2).text())
+        $('#tel').val($(event.target).closest('tr').find('td').eq(3).text())
+
+        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('id').disabled = true;
+        document.getElementById('updateBtn').disabled = false;
+        document.getElementById('deleteBtn').disabled = false;
+    });
+
+
+
+    //-----------------update data in localStorage-------------------------------
+
+    $('#updateBtn').on('click', () => {
+
+        if (checkText()) {
+
+            let cus_arr = getLocalSData();
+
+            let index = cus_arr.findIndex(value => value.customer_id === $('#id').val());
+
+            cus_arr[index] = initObj();
+            localStorage.setItem(data, JSON.stringify(cus_arr));
+            loadData();
+            disableBtn();
+            clearData();
+            arrIndex = -1;
+        }
+    });
+
+    //----------------------delete data in localStorage------------------------------
+
+    $('#deleteBtn').on('click', () => {
+
+        if (checkText()) {
+
+            let cus_arr = getLocalSData();
+
+            let index = cus_arr.findIndex(value => value.customer_id === $('#id').val());
+
+            cus_arr.splice(index, 1);
+            localStorage.setItem(data, JSON.stringify(cus_arr));
+            loadData();
+            disableBtn();
+            clearData();
+            arrIndex = -1;
+        }
+    });
+
+    function checkText() {
+
+        if ($('#id').val() === "") {
+            alert("Customer id is empty or invalid !");
+            $('#id').focus();
+            $('#id').css({
+                borderBottom: "2px solid red"
+            });
+            return false;
+        } else if ($('#name').val() === "") {
+            alert("Name is invalid or empty !");
+            $('#name').focus();
+            $('#name').css({borderBottom: "2px solid red"});
+            return false;
+        } else if ($('#address').val() === "") {
+            alert("Address is invalid or empty  !");
+            $('#address').focus();
+            $('#address').css({borderBottom: "2px solid red"});
+            return false;
+        } else if ($('#tel').val() === "") {
+            alert("Phone number is invalid or empty  !");
+            $('#tel').focus();
+            $('#tel').css({borderBottom: "2px solid red"});
+            return false;
+        }
+        return true;
+    }
+
+    $('#id').on('keypress', () => {
+        $('#id').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#name').on('keypress', () => {
+        $('#name').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#address').on('keypress', () => {
+        $('#address').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#tel').on('keypress', () => {
+        $('#tel').css({borderBottom: "1px solid #ced4da"});
+    });
+
+    $('#myform').on('mouseover', () => {
+        if ($('#id').val() !== "" && $('#name').val() !== "" && $('#address').val() !== "" && $('#tel').val() !== "") {
+            document.getElementById('saveBtn').disabled = false;
+            return;
+        }
+        document.getElementById('saveBtn').disabled = true;
+    });
+
+    //-----------------------clear function-----------------------------------
+
+    function clearData() {
+        $('#id').val("");
+        $('#name').val("");
+        $('#address').val("");
+        $('#tel').val("");
+        document.getElementById('id').disabled = false;
+        document.getElementById('saveBtn').disabled = false;
+    }
+
+    function disableBtn() {
+        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('updateBtn').disabled = true;
+        document.getElementById('deleteBtn').disabled = true;
+    }
+
+</script>
+</body>
+</html>

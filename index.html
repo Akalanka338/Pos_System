@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/d850fa2086.js" crossorigin="anonymous"></script>
+
+    <style>
+        ul > li {
+            cursor: pointer;
+            margin: 20px;
+            color: #7abaff;
+        }
+
+    </style>
+</head>
+<body>
+
+<header class="p-3 mb-2 bg-black text-white" style="background-color: #0f6674">
+    <h1 class="position-absolute" id="nav">Tuna POS System</h1>
+    <ul class="list-group list-group-horizontal text-danger justify-content-end font-weight-bold">
+        <li class="btn btn-dark" id="lnkHome"><a class="text-white" href="index.html">Home</a></li>
+        <li class="btn btn-dark" id="lnkCustomer"><a href="pages/customer.html">Customer</a></li>
+        <li class="btn btn-dark" id="lnkItem"><a href="pages/item.html">Item</a></li>
+        <li class="btn btn-dark" id="lnkOrders"><a href="pages/order.html">Orders</a></li>
+    </ul>
+</header>
+
+<!--dashboard content-->
+<main class="container-fluid " id="dashboardContent" >
+    <div class="jumbotron pt-md-5">
+        <div id="home-tiles">
+            <div class="row ">
+                <div class="col-lg-6 col-xl-3 mb-2" >
+                    <div class="card" style="background-color: #20c997" >
+                        <div class="card-header bg-danger font-weight-bolder">Customers</div>
+                        <div class="card-body">
+                            <div class="dash-tile-icon"><i class="fas fa-users"></i></div>
+                            <div class="dash-tile-text text-right text-black-50"><h2>5</h2></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-3 mb-2">
+                    <div class="card" style="background-color: dodgerblue">
+                        <div class="card-header bg-danger font-weight-bolder">Items</div>
+                        <div class="card-body">
+                            <div class="dash-tile-icon"><i class="fas fa-cubes"></i></div>
+                            <div class="dash-tile-text text-right text-black-50"><h2>10</h2></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-3 mb-2">
+                    <div class="card" style="background-color: gold">
+                        <div class="card-header bg-danger font-weight-bolder">My Orders</div>
+                        <div class="card-body">
+                            <div class="dash-tile-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <div class="dash-tile-text text-right text-black-50"><h2>1</h2></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-3 mb-2">
+                    <div class="card" style="background-color: #0f6674">
+                        <div class="card-header bg-danger font-weight-bolder">Income</div>
+                        <div class="card-body">
+                            <div class="dash-tile-icon"><i class="fa-sharp fa-solid fa-dollar-sign"></i></div>
+                            <div class="dash-tile-text text-right text-black-50"><h2>100$</h2></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="assets/js/jquery-3.6.1.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>

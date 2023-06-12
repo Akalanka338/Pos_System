@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Item Manage</title>
+    <meta content="width=device-width initial-scale=1" name="viewport">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+
+    <style>
+        ul > li {
+            cursor: pointer;
+            margin: 20px;
+            color: #7abaff;
+        }
+    </style>
+</head>
+<body>
+<!--header-->
+<header class="p-3 mb-2 bg-black text-white" style="background-color: #0f6674">
+    <h1 class="position-absolute" id="nav">Tuna POS System</h1>
+    <ul class="list-group list-group-horizontal text-danger justify-content-end font-weight-bold">
+        <li class="btn btn-dark" id="lnkHome"><a href="../index.html">Home</a></li>
+        <li class="btn btn-dark" id="lnkCustomer"><a href="customer.html">Customer</a></li>
+        <li class="btn btn-dark" id="lnkItem"><a class="text-white" href="item.html">Item</a></li>
+        <li class="btn btn-dark" id="lnkOrders"><a href="order.html">Orders</a></li>
+    </ul>
+</header>
+
+<!--item content-->
+<main class="container-fluid" id="itemContent">
+    <section class="row" style="background-color: #8fd19e">
+        <div class="col-12 col-lg-4" >
+            <h1>Item Form</h1>
+
+            <div class="form-group">
+                <label for="itemCode">Item Code</label>
+                <input class="form-control" id="itemCode" type="text">
+                <span class="control-error" id="lblCode"></span>
+            </div>
+            <div class="form-group">
+                <label for="des">Item Name</label>
+                <input class="form-control" id="des" type="text">
+                <span class="control-error" id="lblname"></span>
+            </div>
+            <div class="form-group">
+                <label for="unitPrice">Unit Price</label>
+                <input class="form-control" id="unitPrice" type="text">
+                <span class="control-error" id="lblqty"></span>
+            </div>
+            <div class="form-group">
+                <label for="qty">Qty</label>
+                <input class="form-control" id="qty" type="text">
+                <span class="control-error" id="lblprice"></span>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="saveBtn">Add Item</button>
+                <button class="btn btn-danger" id="deleteBtn">Remove</button>
+                <button class="btn btn-warning" id="updateBtn">Update</button>
+                <!--<button class="btn btn-success">Get All</button>
+                <button class="btn btn-danger" id="btn-clear">Clear All</button>-->
+            </div>
+
+        </div>
+        <div class="col-12 col-lg-8 mt-3">
+            <table class="table table-bordered table-hover" id="tbl">
+                <thead class="bg-danger text-white">
+                <tr>
+                    <th>Item Code</th>
+                    <th>Item Name</th>
+                    <th>Item Qty</th>
+                    <th>Item Price</th>
+                </tr>
+                </thead>
+                <tbody id="tblItem">
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<script src="../assets/js/jquery-3.6.1.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+<script>
+
+    var item = "ITEM";
+
+    //------------add new object into the localStorage---------------------------
+
+    $('#saveBtn').on('click', () => {
+
+        if (checkText()) {
+            let arr = getLocalSData();
+
+            if (isExistsById(arr)) {
+                alert("Item code all ready exists !");
+                return;
+            }
+            arr.push(initObj());
+            localStorage.setItem(item, JSON.stringify(arr));
+            loadData();
+            disableBtn();
+            clearData();
+        }
+    });
+
+    //--------check customer_id all ready exists --------------------------
+
+    function isExistsById(arr) {
+        let flag = false;
+        arr.filter((event) => {
+            if (event.item_code === $('#itemCode').val()) {
+                flag = true;
+            }
+        });
+        return flag;
+    }
+
+
+    //----------------get localStorage array-------------------------------
+
+    function getLocalSData() {
+
+        let pre_data = localStorage.getItem(item);
+        let data_array = [];
+        if (pre_data) {
+            data_array = JSON.parse(pre_data);
+        }
+        return data_array;
+    }
+
+    //--------------create obj using textField data----------------------------
+
+    function initObj() {
+        return {
+            item_code: $('#itemCode').val(),
+            item_description: $('#des').val(),
+            item_unit_price: $('#unitPrice').val(),
+            item_qty: $('#qty').val()
+
+        }
+    }
+
+    //-------------------load table data-------------------------------
+
+    function loadData() {
+
+        let per_data = localStorage.getItem(item);
+
+        $('table tbody tr td').remove();
+
+        let item_data_arr = JSON.parse(per_data);
+        if(per_data){
+            item_data_arr.map((value, index) => {
+                var row = "<tr>" +
+                    "<td>" + value.item_code+ "</td>" +
+                    "<td>" + value.item_description + "</td>" +
+                    "<td>" + value.item_unit_price + "</td>" +
+                    "<td>" + value.item_qty + "</td>" +
+                    "</tr>";
+
+                $('tbody').append(row);
+            });
+        }
+
+    }
+
+    //---------------add table row click event listener-------------------------
+
+    loadData();
+
+    $('table tbody').on('click', 'tr', (event) => {
+        $('#itemCode').val($(event.target).closest('tr').find('td').eq(0).text());
+        $('#des').val($(event.target).closest('tr').find('td').eq(1).text());
+        $('#unitPrice').val($(event.target).closest('tr').find('td').eq(2).text());
+        $('#qty').val($(event.target).closest('tr').find('td').eq(3).text());
+
+        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('itemCode').disabled = true;
+        document.getElementById('updateBtn').disabled = false;
+        document.getElementById('deleteBtn').disabled = false;
+    });
+
+
+    //-----------------update data in localStorage-------------------------------
+
+    $('#updateBtn').on('click', () => {
+
+        if (checkText()) {
+            let cus_arr = getLocalSData();
+
+            let index = cus_arr.findIndex(value => value.item_code === $('#itemCode').val());
+
+            cus_arr[index] = initObj();
+
+            localStorage.setItem(item, JSON.stringify(cus_arr));
+            loadData();
+            disableBtn();
+            clearData();
+            arrIndex = -1;
+        }
+    });
+
+    //----------------------delete data in localStorage------------------------------
+
+    $('#deleteBtn').on('click', () => {
+
+        if (checkText()) {
+            let cus_arr = getLocalSData();
+
+            let index = cus_arr.findIndex(value => value.item_code === $('#itemCode').val());
+
+            cus_arr.splice(index, 1);
+            localStorage.setItem(item, JSON.stringify(cus_arr));
+            loadData();
+            disableBtn();
+            clearData();
+            arrIndex = -1;
+        }
+    });
+
+    function checkText() {
+        if ($('#itemCode').val() === "") {
+            alert("Item code is empty or invalid !");
+            $('#itemCode').focus();
+            $('#itemCode').css({
+                borderBottom: "2px solid red"
+            });
+            return false;
+        } else if ($('#des').val() === "") {
+            alert("Description is invalid or empty !");
+            $('#des').focus();
+            $('#des').css({borderBottom: "2px solid red"});
+            return false;
+        } else if ($('#unitPrice').val() === "") {
+            alert("Unit price is invalid or empty  !");
+            $('#unitPrice').focus();
+            $('#unitPrice').css({borderBottom: "2px solid red"});
+            return false;
+        } else if ($('#qty').val() === "") {
+            alert("Qty is invalid or empty  !");
+            $('#qty').focus();
+            $('#qty').css({borderBottom: "2px solid red"});
+            return false;
+        }
+        return true;
+    }
+
+    $('#itemCode').on('keypress', () => {
+        $('#itemCode').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#des').on('keypress', () => {
+        $('#des').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#unitPrice').on('keypress', () => {
+        $('#unitPrice').css({borderBottom: "1px solid #ced4da"});
+    });
+    $('#qty').on('keypress', () => {
+        $('#qty').css({borderBottom: "1px solid #ced4da"});
+    });
+
+    $('#myform').on('mouseover', () => {
+        if ($('#itemCode').val() !== "" && $('#des').val() !== "" && $('#unitPrice').val() !== "" && $('#qty').val() !== "" && arrIndex === -1) {
+            document.getElementById('saveBtn').disabled = false;
+            return;
+        }
+        document.getElementById('saveBtn').disabled = true;
+    });
+
+    //-----------------------clear function-----------------------------------
+
+    function clearData() {
+        $('#itemCode').val("");
+        $('#des').val("");
+        $('#unitPrice').val("");
+        $('#qty').val("");
+        document.getElementById('itemCode').disabled = false;
+        document.getElementById('saveBtn').disabled = false;
+    }
+
+    function disableBtn() {
+        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('updateBtn').disabled = true;
+        document.getElementById('deleteBtn').disabled = true;
+    }
+
+
+
+
+</script>
+</body>
+</html>
